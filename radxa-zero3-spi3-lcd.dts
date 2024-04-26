@@ -1,0 +1,47 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	metadata {
+		title = "Enable Waveshare 1.44 inch Display on SPI3";
+		compatible = "radxa,zero3";
+		category = "misc";
+		exclusive = "GPIO4_A6", "GPIO3_C6", "GPIO3_D3", "GPIO0_C7", "GPIO4_B0", "GPIO4_B2", "GPIO4_B3";
+		description = "Enable Waveshare 1.44 inch Display on SPI3.";
+	};
+
+	fragment@0 {
+		target = <&spi3>;
+
+		__overlay__ {
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			pinctrl-names = "default", "high_speed";
+			pinctrl-0 = <&spi3m1_cs0 &spi3m1_pins>;
+			pinctrl-1 = <&spi3m1_cs0 &spi3m1_pins_hs>;
+			max-freq = <10000000>;
+
+			st7735r@0 {
+				compatible = "sitronix,st7735r";
+				reg = <0>;
+				spi-max-frequency = <10000000>;
+                width = <128>;
+                height = <128>;
+                buswidth = <8>;
+                regwidth = <8>;
+                fps = <60>;
+                rotate = <90>;
+				debug = <0>;
+				
+				// configure pin assigment below
+				reset-gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_LOW>; // pin pi27 - 13 - gpio3 line 2
+                dc-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_HIGH>; // pin pi25 - 22 - gpio3 line 17
+			};
+		};
+	};
+};
